@@ -110,8 +110,8 @@ Desktop.ini
 *.swn
 
 # ALEMBIC
-alembic/versions/*.pyc
-alembic.ini
+# alembic
+# alembic.ini
 
 # SQLite database files
 *.db
@@ -124,8 +124,8 @@ local_settings.py
 
 # Docker
 *.env
-Dockerfile
-docker-compose.yml
+# Dockerfile
+# docker-compose.yaml
 .dockerignore
 
 # Python virtual environments
