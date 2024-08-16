@@ -5,7 +5,6 @@ export DATABASE_URL=${DATABASE_URL}
 # db:5432 --timeout=30 -- echo "PostgreSQL is up - executing command"
 
 # Check if alembic.ini exists, if not, initialize alembic
-# if [ ! -f "/app/alembic.ini" ]; then
 if [ ! -f "alembic.ini" ]; then
     echo "Initializing Alembic..."
     alembic init alembic
