@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_e-commerce
+    environment:
+      POSTGRES_DB: e-commerce_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d e-commerce_db"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  web:
+    build: .
+    environment:
+      DATABASE_URL: postgresql+asyncpg://admin:admin@db:5432/e-commerce_db
+    volumes:
+      - .:/app
+    entrypoint: ["./entrypoint.sh"]
+    ports:
+      - "8000:8000"
+    command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

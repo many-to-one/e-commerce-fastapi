@@ -1,0 +1,10 @@
+sudo chown newowner:newgroup filename (script.py.mako)
+#If the migration isn't exist, try to make it manualy (or just rund docker-compose up [maybe for the second time docker run migrations in entrypoint.sh when you up the app]):
+docker-compose exec web alembic revision --autogenerate -m "Your migration message"
+docker-compose exec web alembic upgrade head
+
+# If there is an error with migrations, for example adding the column, than deleted it:
+manualy delete or comment the migration in alembic/version - exmp bellow:
+# op.create_unique_constraint(None, 'carts', ['id'])
+# op.add_column('users', sa.Column('role', sa.Enum('admin', 'user', name='user_roles'), server_default='user', nullable=False))
+than down and up --build the docker-compose and run docker-compose up

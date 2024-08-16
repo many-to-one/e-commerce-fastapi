@@ -1,0 +1,16 @@
+uvicorn
+fastapi
+alembic
+bcrypt==4.0.1
+passlib[bcrypt]
+python-jose
+pydantic
+pydantic[email]
+python-jose
+python-multipart
+python-dotenv
+sqladmin 
+asyncpg
+# psycopg2
+psycopg2-binary
+SQLAlchemy
