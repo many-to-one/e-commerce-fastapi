@@ -8,3 +8,7 @@ manualy delete or comment the migration in alembic/version - exmp bellow:
 # op.create_unique_constraint(None, 'carts', ['id'])
 # op.add_column('users', sa.Column('role', sa.Enum('admin', 'user', name='user_roles'), server_default='user', nullable=False))
 than down and up --build the docker-compose and run docker-compose up
+
+
+#To delete <none> images use:
+docker image prune 

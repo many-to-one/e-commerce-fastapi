@@ -10,6 +10,10 @@ if [ ! -f "alembic.ini" ]; then
     alembic init alembic
 fi
 
+if [ ! -f ".env" ]; then
+    echo "Generating SECRET_KEY..."
+    python generate_secret_key.py > .env
+fi
 # Set up the database (e.g., run migrations)
 alembic revision --autogenerate -m "add is_admin to users table"
 alembic upgrade head
