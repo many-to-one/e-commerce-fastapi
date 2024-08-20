@@ -1,5 +1,6 @@
 # import datetime
 from datetime import datetime, timedelta, timezone
+from db.database import get_db
 from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from core.config import settings
@@ -7,6 +8,9 @@ from passlib.context import CryptContext
 # from fastapi.security import HTTPBearer
 from fastapi.security.oauth2 import OAuth2PasswordBearer
 from fastapi import Depends
+from models.models import User
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 
 from schemas.auth import TokenResponse
 
@@ -28,7 +32,7 @@ def verify_password(plain_password, hashed_password):
 # Create Access & Refresh Token
 async def get_user_token(id: int, refresh_token=None):
     payload = {"id": id}
-    print('********* id **********', id)
+    # print('********* id **********', id)
 
     access_token_expiry = timedelta(minutes=settings.access_token_expire_minutes)
 
@@ -61,7 +65,7 @@ async def create_refresh_token(data):
 
 
 # Get Payload Of Token
-def get_token_payload(token):
+async def get_token_payload(token):
     try:
         return jwt.decode(token, settings.secret_key, [settings.algorithm])
     except JWTError:
@@ -72,8 +76,22 @@ def get_token_payload(token):
             headers={"WWW-Authenticate": "Bearer"}
         )
 
+# token: str = Depends(oauth2_scheme) for Swagger Authorize
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+    # print('********* token **********', token)
+    user = await get_token_payload(token)
+    user_id = user.get('id')
+    result = await db.execute(select(User).filter(User.id == user_id))
+    current_user = result.scalar_one_or_none()
+    # return user.get('id')
+    return current_user
 
-def get_current_user(token: str = Depends(oauth2_scheme)): #str = Depends(oauth2_scheme)
-    print('********* token **********', token)
-    user = get_token_payload(token)
-    return user.get('id')
+
+async def check_admin(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+
+    user = await get_token_payload(token)
+    user_id = user.get('id')
+    result = await db.execute(select(User).filter(User.id == user_id))
+    current_user = result.scalar_one_or_none()
+    if current_user.is_admin != True:
+        raise HTTPException(status_code=403, detail="Admin role required")

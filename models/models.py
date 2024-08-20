@@ -1,5 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, Float, ARRAY, Enum
-from sqlalchemy.sql.expression import text
+# from sqlalchemy.sql import expression
+from sqlalchemy.sql.expression import text, false
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.orm import relationship
 from db.database import Base
@@ -13,9 +14,9 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     full_name = Column(String, nullable=True)
-    is_active = Column(Boolean, server_default="True", nullable=False)
+    is_active = Column(Boolean, server_default=false(), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
-    is_admin = Column(Boolean, server_default="False", nullable=True)
+    is_admin = Column(Boolean, server_default=false(), nullable=False)
 
     # New column for role
     # role = Column(Enum("admin", "user", name="user_roles"), nullable=False, server_default="user")

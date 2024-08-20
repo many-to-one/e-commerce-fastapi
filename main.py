@@ -9,14 +9,15 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from routers import auth, oauth
+from routers import auth, users, categories
 
 
 app = FastAPI()
 
 
-# app.include_router(oauth.router)
 app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(categories.router)
 
 
 @app.get("/")
