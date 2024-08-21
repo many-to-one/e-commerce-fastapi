@@ -7,7 +7,7 @@ from schemas.users import UserBase, UserCreateForm
 from services.auth import AuthService
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import APIRouter, Depends, status, Header
+from fastapi import APIRouter, Depends, status, Response
 from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
 
@@ -24,11 +24,12 @@ async def sing_up(
 
 @router.post("/login", status_code = status.HTTP_200_OK, response_model=TokenResponse)
 async def login(
+        response: Response,
         user_credentials: OAuth2PasswordRequestForm = Depends(),
         db: AsyncSession = Depends(get_db),
     ):
     # print('********* user_credentials **********', user_credentials)
-    return await AuthService.login(db, user_credentials.username, user_credentials.password)
+    return await AuthService.login(db, user_credentials.username, user_credentials.password, response)
 
 
 @router.post("/change_password", status_code = status.HTTP_200_OK, response_model=UserBase)

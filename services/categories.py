@@ -37,7 +37,7 @@ class CategoryService:
         category = result.scalar_one_or_none()
 
         if category is None:
-            raise HTTPException(status_code=404, detail="No user")
+            raise HTTPException(status_code=404, detail="No category")
         
         return category
     

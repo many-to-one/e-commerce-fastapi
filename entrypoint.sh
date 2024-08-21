@@ -12,7 +12,7 @@ if [ ! -f "alembic.ini" ]; then
 fi
 
 # Set up the database (e.g., run migrations)
-# alembic revision --autogenerate -m "add: categories logic"
+# alembic revision --autogenerate -m "update all tables: lazy=selectin"
 # alembic upgrade head
 
 # Use once at first time, than add secret_key to .env and delete secret.txt

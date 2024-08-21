@@ -11,7 +11,7 @@ from schemas.categories import CategoryBase, CategoryCreateForm, CategoryUpdateF
 router = APIRouter(tags=["Category"], prefix="/category")
 
 
-@router.get("/all_categories", status_code = status.HTTP_200_OK, response_model=List[CategoryBase])
+@router.get("/all", status_code = status.HTTP_200_OK, response_model=List[CategoryBase])
 async def all_categories(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
@@ -20,11 +20,7 @@ async def all_categories(
 
 
 # Create New Category
-@router.post(
-    "/new",
-    status_code=status.HTTP_201_CREATED,
-    response_model=CategoryBase,
-)
+@router.post("/new", status_code=status.HTTP_201_CREATED, response_model=CategoryBase)
 async def create_category(
         category_form: CategoryCreateForm = Depends(CategoryCreateForm), 
         db: AsyncSession = Depends(get_db),
@@ -34,8 +30,19 @@ async def create_category(
     return await CategoryService.create_category(db, category_form)
 
 
+@router.get(
+    "/{id}", status_code=status.HTTP_200_OK, response_model=CategoryBase)
+async def get_category(
+        id: int, 
+        db: AsyncSession = Depends(get_db),
+        # check_admin: UserBase = Depends(check_admin),
+        current_user: UserBase = Depends(get_current_user),       
+    ):
+    return await CategoryService.get_category(db, id)
+
+
 # Edit Category
-@router.patch("/update_category/{id}", status_code = status.HTTP_200_OK, response_model=CategoryBase)
+@router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=CategoryBase)
 async def update_category(
         id: int,
         category_form: CategoryUpdateForm = Depends(CategoryUpdateForm),

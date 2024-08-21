@@ -31,3 +31,19 @@ class UserService:
             raise HTTPException(status_code=404, detail="No user")
         
         return user
+    
+
+    @staticmethod
+    async def delete_user(db: AsyncSession, id: str):
+
+        result = await db.execute(select(User).filter(User.id == id))
+        user = result.scalar_one_or_none()
+
+        if user is None:
+            raise HTTPException(status_code=404, detail="No user")
+        
+        await db.delete(user)
+        await db.commit()
+        await db.flush()
+        
+        return {"message": "User deleted successfully!"}

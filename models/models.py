@@ -17,12 +17,13 @@ class User(Base):
     is_active = Column(Boolean, server_default=false(), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
     is_admin = Column(Boolean, server_default=false(), nullable=False)
+    access_token = Column(String, nullable=True)
 
     # New column for role
     # role = Column(Enum("admin", "user", name="user_roles"), nullable=False, server_default="user")
 
     # Relationship with carts
-    carts = relationship("Cart", back_populates="user")
+    carts = relationship("Cart", back_populates="user", lazy="selectin")
 
 
 class Cart(Base):
@@ -37,7 +38,7 @@ class Cart(Base):
     user = relationship("User", back_populates="carts")
 
     # Relationship with cart items
-    cart_items = relationship("CartItem", back_populates="cart")
+    cart_items = relationship("CartItem", back_populates="cart", lazy="selectin")
 
 
 class CartItem(Base):
@@ -50,8 +51,8 @@ class CartItem(Base):
     subtotal = Column(Float, nullable=False)
 
     # Relationship with cart and product
-    cart = relationship("Cart", back_populates="cart_items")
-    product = relationship("Product", back_populates="cart_items")
+    cart = relationship("Cart", back_populates="cart_items", lazy="selectin")
+    product = relationship("Product", back_populates="cart_items", lazy="selectin")
 
 
 class Category(Base):
@@ -61,7 +62,7 @@ class Category(Base):
     name = Column(String, unique=True, nullable=False)
 
     # Relationship with products
-    products = relationship("Product", back_populates="category")
+    products = relationship("Product", back_populates="category", lazy="selectin")
 
 
 class Product(Base):
@@ -69,20 +70,20 @@ class Product(Base):
 
     id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
     title = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    price = Column(Integer, nullable=False)
-    discount_percentage = Column(Float, nullable=False)
-    rating = Column(Float, nullable=False)
+    description = Column(String, nullable=True)
+    price = Column(Float, nullable=False)
+    discount_percentage = Column(Float, nullable=True)
+    rating = Column(Float, nullable=True)
     stock = Column(Integer, nullable=False)
-    brand = Column(String, nullable=False)
-    thumbnail = Column(String, nullable=False)
-    images = Column(ARRAY(String), nullable=False)
+    brand = Column(String, nullable=True)
+    thumbnail = Column(String, nullable=True)
+    images = Column(ARRAY(String), nullable=True)
     is_published = Column(Boolean, server_default="True", nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
 
     # Relationship with category
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
-    category = relationship("Category", back_populates="products")
+    category = relationship("Category", back_populates="products", lazy="selectin")
 
     # Relationship with cart items
-    cart_items = relationship("CartItem", back_populates="product")
+    cart_items = relationship("CartItem", back_populates="product", lazy="selectin")

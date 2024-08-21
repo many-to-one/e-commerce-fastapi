@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Header, Request, 
 
 router = APIRouter(tags=["Users"], prefix="/users")
 
-@router.get("/all_users", status_code = status.HTTP_200_OK, response_model=List[UserBase])
+@router.get("/all", status_code = status.HTTP_200_OK, response_model=List[UserBase])
 async def all_users(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
@@ -19,17 +19,18 @@ async def all_users(
     return await UserService.all_users(db=db)
 
 
-@router.get("/user{id}", status_code = status.HTTP_200_OK, response_model=UserBase)
+@router.get("/{id}", status_code = status.HTTP_200_OK, response_model=UserBase)
 async def get_user(
         id: int,
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
+    print('********* token **********', current_user.access_token)
     return await UserService.get_user(db=db, id=id)
 
 
-@router.patch("/patch_user", status_code = status.HTTP_200_OK, response_model=UserBase)
-async def patch_user(
+@router.patch("/update", status_code = status.HTTP_200_OK, response_model=UserBase)
+async def update_user(
         user_form: UserEditForm = Depends(UserEditForm),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
@@ -47,19 +48,14 @@ async def patch_user(
     return current_user
 
 
-@router.delete("/delete_user_by_id/{id}", status_code = status.HTTP_200_OK,)
+@router.delete("/delete_by_id/{id}", status_code = status.HTTP_200_OK,)
 async def delete_user_by_id(
     id: int,
     db: AsyncSession = Depends(get_db),
     current_user: UserBase = Depends(get_current_user)
 ):
     if current_user.is_admin == True:
-        user = await UserEditForm.get_user(db, id=id)        
-        await db.delete(user)
-        await db.commit()
-        await db.flush()
-        
-        return {"message": "User deleted successfully!"}
+        return await UserService.delete_user(db, id)
     else:
         raise HTTPException(status_code=400, detail="Permission deny")
     

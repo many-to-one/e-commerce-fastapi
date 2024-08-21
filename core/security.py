@@ -30,13 +30,19 @@ def verify_password(plain_password, hashed_password):
 
 
 # Create Access & Refresh Token
-async def get_user_token(id: int, refresh_token=None):
+async def get_user_token(db, id: int, refresh_token=None):
     payload = {"id": id}
     # print('********* id **********', id)
 
     access_token_expiry = timedelta(minutes=settings.access_token_expire_minutes)
 
     access_token = await create_access_token(payload, access_token_expiry)
+    result = await db.execute(select(User).filter(User.id == id))
+    user = result.scalar_one_or_none()
+    user.access_token = access_token
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
 
     if not refresh_token:
         refresh_token = await create_refresh_token(payload)
@@ -65,7 +71,7 @@ async def create_refresh_token(data):
 
 
 # Get Payload Of Token
-async def get_token_payload(token):
+async def get_token_payload(token: str)-> dict:
     try:
         return jwt.decode(token, settings.secret_key, [settings.algorithm])
     except JWTError:
@@ -77,7 +83,7 @@ async def get_token_payload(token):
         )
 
 # token: str = Depends(oauth2_scheme) for Swagger Authorize
-async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db))-> User:
     # print('********* token **********', token)
     user = await get_token_payload(token)
     user_id = user.get('id')
