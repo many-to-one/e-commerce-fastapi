@@ -2,6 +2,7 @@ from typing import List
 from core.security import get_current_user, get_password_hash
 from db.database import get_db
 from models.models import User
+from orm.orm import OrmService
 from schemas.users import UserBase, UserCreateForm, UserEditForm
 from services.users import UserService
 
@@ -16,7 +17,7 @@ async def all_users(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    return await UserService.all_users(db=db)
+    return await OrmService.all(db=db, model=User)
 
 
 @router.get("/{id}", status_code = status.HTTP_200_OK, response_model=UserBase)
@@ -25,12 +26,14 @@ async def get_user(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    print('********* token **********', current_user.access_token)
-    return await UserService.get_user(db=db, id=id)
+    # print('********* token **********', current_user.access_token)
+    # return await UserService.get_user(db=db, id=id)
+    return await OrmService.get(db=db, id=id, model=User)
 
 
-@router.patch("/update", status_code = status.HTTP_200_OK, response_model=UserBase)
+@router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=UserBase)
 async def update_user(
+    id: int,
         user_form: UserEditForm = Depends(UserEditForm),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
@@ -46,6 +49,7 @@ async def update_user(
     await db.refresh(current_user)
 
     return current_user
+    # return await OrmService.update(db=db, form=user_form, id=id, model=User)
 
 
 @router.delete("/delete_by_id/{id}", status_code = status.HTTP_200_OK,)
