@@ -7,9 +7,7 @@ from schemas.users import UserCreateForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from fastapi import HTTPException, Response, status
-# from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 class AuthService:
 
@@ -31,8 +29,7 @@ class AuthService:
     @staticmethod
     async def login(db: AsyncSession, username: str, password: str, response):
         result = await db.execute(select(User).filter(User.username == username))  # Await the query execution
-        user = result.scalar_one_or_none()  # Get one user or none
-        # print('********* User **********', user.id, user.username)
+        user = result.scalar_one_or_none() 
         if not user:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid Credentials")
 
@@ -42,10 +39,6 @@ class AuthService:
         user.is_active = True
         await db.commit()
 
-        # token = await get_user_token(db=db, id=user.id)
-        # match = re.search(r"access_token='([^']*)'", token)
-        # response.set_cookie(key="token", value=match.group(1), httponly=True, secure=True, samesite='Strict')
-        
         return await get_user_token(db=db, id=user.id)
     
 

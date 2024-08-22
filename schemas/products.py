@@ -8,13 +8,13 @@ from typing import List, Optional
 class ProductBase(BaseModel):
     id: int
     title: str
-    description: str
     price: float
-    discount_percentage: float
-    rating: float
     stock: int
-    brand: str
-    thumbnail: str
+    description: Optional[str] = None
+    discount_percentage: Optional[float] = None
+    rating: Optional[float] = None
+    brand: Optional[str] = None
+    thumbnail: Optional[str] = None
     images: List[str]
     is_published: bool
     created_at: datetime
@@ -39,7 +39,6 @@ class ProductCreateForm(BaseModel):
     category_id: int
     discount_percentage: Optional[float] = None
     rating: Optional[float] = None
-    stock: Optional[int] = None
     brand: Optional[str] = None
     thumbnail: Optional[str] = None
     images: Optional[List[str]] = None

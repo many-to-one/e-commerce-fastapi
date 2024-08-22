@@ -1,9 +1,11 @@
+from http.client import HTTPException
 from typing import List
 from core.security import get_current_user, check_admin
 from db.database import get_db
 from fastapi import APIRouter, Depends, Query, status
+from models.models import Category
+from orm.orm import OrmService
 from schemas.users import UserBase
-from services.categories import CategoryService
 from sqlalchemy.ext.asyncio import AsyncSession
 from schemas.categories import CategoryBase, CategoryCreateForm, CategoryUpdateForm
 
@@ -16,10 +18,10 @@ async def all_categories(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    return await CategoryService.all_categories(db=db)
+    orm_service = OrmService(db)
+    return await orm_service.all(model=Category, name='Categories')
 
 
-# Create New Category
 @router.post("/new", status_code=status.HTTP_201_CREATED, response_model=CategoryBase)
 async def create_category(
         category_form: CategoryCreateForm = Depends(CategoryCreateForm), 
@@ -27,18 +29,18 @@ async def create_category(
         check_admin: UserBase = Depends(check_admin),
         current_user: UserBase = Depends(get_current_user),       
     ):
-    return await CategoryService.create_category(db, category_form)
+    orm_service = OrmService(db)
+    return await orm_service.create(model=Category, form=category_form)
 
 
-@router.get(
-    "/{id}", status_code=status.HTTP_200_OK, response_model=CategoryBase)
+@router.get("/get/{id}", status_code=status.HTTP_200_OK, response_model=CategoryBase)
 async def get_category(
         id: int, 
         db: AsyncSession = Depends(get_db),
-        # check_admin: UserBase = Depends(check_admin),
         current_user: UserBase = Depends(get_current_user),       
     ):
-    return await CategoryService.get_category(db, id)
+    orm_service = OrmService(db)
+    return await orm_service.get(id=id, model=Category, name='Category')
 
 
 # Edit Category
@@ -49,13 +51,18 @@ async def update_category(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    
-    category = await CategoryService.update_category(db, category_form, id)
-    if category_form.name is not None:
-        category.name = category_form.name
+    orm_service = OrmService(db)
+    return await orm_service.update(form=category_form, id=id, model=Category, name='Category')
 
-    db.add(category)
-    await db.commit()  
-    await db.refresh(category)
 
-    return category
+@router.delete("/delete/{id}", status_code = status.HTTP_200_OK,)
+async def delete_category(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user)
+):
+    orm_service = OrmService(db)
+    if current_user.is_admin == True:
+        return await orm_service.delete(id=id, model=Category, name='Category')
+    else:
+        raise HTTPException(status_code=400, detail="Permission deny")

@@ -4,7 +4,7 @@ from db.database import get_db
 from models.models import User
 from schemas.auth import ChangePasswordForm, TokenResponse
 from schemas.users import UserBase, UserCreateForm
-from services.auth import AuthService
+from orm.auth import *
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status, Response
@@ -12,7 +12,7 @@ from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestF
 
 
 router = APIRouter(tags=["Auth"], prefix="/auth")
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
 
 @router.post("/sing_up", status_code=status.HTTP_201_CREATED, response_model=UserBase)
 async def sing_up(

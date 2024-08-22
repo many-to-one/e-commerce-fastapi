@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.ext.declarative import DeclarativeMeta, declarative_base
 from sqlalchemy.orm import sessionmaker
 
-from routers import auth, users, categories, products
+from routers import auth, carts, users, categories, products
 
 
 app = FastAPI()
@@ -20,6 +20,7 @@ app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(categories.router)
 app.include_router(products.router)
+app.include_router(carts.router)
 
 
 @app.get("/")
