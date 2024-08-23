@@ -2,6 +2,7 @@ from typing import List
 from core.security import check_admin, get_current_user, get_password_hash
 from db.database import get_db
 from models.models import Cart
+from orm.carts import CartService
 from schemas.carts import *
 from schemas.users import UserBase
 from orm.orm import *
@@ -28,7 +29,7 @@ async def create_cart(
         check_admin: UserBase = Depends(check_admin),
         current_user: UserBase = Depends(get_current_user),       
     ):
-    orm_service = OrmService(db)
+    orm_service = CartService(db)
     return await orm_service.create_cart(model=Cart, form=category_form, user=current_user)
 
 
@@ -45,13 +46,38 @@ async def get_cart(
 @router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=CartBase)
 async def update_cart(
         id: int,
+        product_form: CartItemCreate = Depends(CartItemCreate), #CartItemCreate
+        db: AsyncSession = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user)
+    ):
+    orm_service = CartService(db)
+    return await orm_service.update_cart(form=product_form, id=id, model=Cart, name='Cart', user=current_user)
+
+
+@router.patch("/cart_item/update/{id}", status_code = status.HTTP_200_OK, response_model=CartBase)
+async def update_cart_item(
+        cart_id: int,
+        cart_item_id: int,
         product_form: CartItemCreate = Depends(CartItemCreate),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
-    orm_service = OrmService(db)
-    return await orm_service.update_cart(form=product_form, id=id, model=Cart, name='Cart')
+    orm_service = CartService(db)
+    return await orm_service.update_cart_item(form=product_form, cart_id=cart_id, cart_item_id=cart_item_id, model=Cart, name='Cart')
 
+
+@router.delete("/delete_cart_item/{id}", status_code = status.HTTP_200_OK,)
+async def delete_cart_item(
+    id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user)
+):
+    orm_service = CartService(db)
+    if current_user.is_admin == True:
+        return await orm_service.delete_cart_item(id=id, model=Cart, name='Cart')
+    else:
+        raise HTTPException(status_code=400, detail="Permission deny")
+    
 
 @router.delete("/delete/{id}", status_code = status.HTTP_200_OK,)
 async def delete_product(
@@ -59,8 +85,8 @@ async def delete_product(
     db: AsyncSession = Depends(get_db),
     current_user: UserBase = Depends(get_current_user)
 ):
-    orm_service = OrmService(db)
+    orm_service = CartService(db)
     if current_user.is_admin == True:
-        return await orm_service.delete(id=id, model=Cart, name='Cart')
+        return await orm_service.delete_cart(id=id, model=Cart, name='Cart')
     else:
         raise HTTPException(status_code=400, detail="Permission deny")
