@@ -66,9 +66,8 @@ class ProductsAdmin(ModelView, model=Product):
     column_list = [
         'id', 'title'
     ]
-    # form_columns = {
-    #     'id', 'title'
-    # }
+
+
 
 # add the views to admin
 def create_admin(app):

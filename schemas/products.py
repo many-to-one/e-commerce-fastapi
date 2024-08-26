@@ -26,6 +26,7 @@ class ProductDisplay(BaseModel):
     price: float
     stock: int
     category_id: int
+    thumbnail: str
     # category: Optional[CategoryBase]
 
     class Config:

@@ -143,7 +143,7 @@ class CartService:
         obj = result.scalar_one_or_none()
 
         if obj is None:
-            raise HTTPException(status_code=404, detail=f"No {name}")
+            raise HTTPException(status_code=404, detail=f"No {name} with id {id}")
         
         for cart_item in obj.cart_items:
             await self.db.delete(cart_item)
@@ -154,6 +154,6 @@ class CartService:
         await self.db.flush()
         
         return {
-            "message": f"{name} deleted successfully!",
-            "userMessage": f"Objekt {name} został usunięty!",
+            "message": f"{name} with id {id} deleted successfully!",
+            "userMessage": f"Koszyk został usunięty!",
             }
