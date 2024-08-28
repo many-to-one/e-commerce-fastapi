@@ -5,6 +5,8 @@ from typing import Optional
 
 
 class TokenResponse(BaseModel):
+    id: int
+    username: str
     access_token: str
     refresh_token: str
     token_type: str = 'Bearer'

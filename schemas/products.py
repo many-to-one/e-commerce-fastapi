@@ -23,6 +23,7 @@ class ProductBase(BaseModel):
 class ProductDisplay(BaseModel):
     id: int
     title: str
+    description: str
     price: float
     stock: int
     category_id: int

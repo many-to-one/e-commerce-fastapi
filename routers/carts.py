@@ -33,6 +33,15 @@ async def create_cart(
     return await orm_service.create_cart(model=Cart, form=category_form, user=current_user)
 
 
+@router.get("/user", status_code=status.HTTP_200_OK, response_model=CartBase)
+async def get_cart(
+        db: AsyncSession = Depends(get_db),
+        current_user: UserBase = Depends(get_current_user),       
+    ):
+    orm_service = CartService(db)
+    return await orm_service.get_cart_by_user_id(id=current_user.id)
+
+
 @router.get("/get/{id}", status_code=status.HTTP_200_OK, response_model=CartBase)
 async def get_cart(
         id: int, 

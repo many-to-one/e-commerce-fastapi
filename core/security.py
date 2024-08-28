@@ -49,9 +49,10 @@ async def get_user_token(db, id: int, refresh_token=None):
 
     return TokenResponse(
         id=id,
+        username=user.username,
         access_token=access_token,
         refresh_token=refresh_token,
-        expires_in=access_token_expiry.seconds
+        expires_in=access_token_expiry.seconds 
     )
 
 

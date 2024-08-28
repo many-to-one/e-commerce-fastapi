@@ -51,6 +51,22 @@ class CartService:
         return obj_cart
     
 
+    async def get_cart_by_user_id(self, id):
+
+        result = await self.db.execute(
+            select(Cart)
+            .filter(Cart.user_id == id)
+            .options(joinedload(Cart.cart_items).selectinload(CartItem.product))
+        )
+        result = result.unique()
+        cart = result.scalar_one_or_none()
+
+        if cart is None:
+            raise HTTPException(status_code=404, detail="No cart found for this user")
+        
+        return cart
+    
+
     async def update_cart_item(self, form, cart_id, cart_item_id, model, name):
 
         total_amount = 0
