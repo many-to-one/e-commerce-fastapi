@@ -46,7 +46,17 @@ class CartService:
         # Add the Cart object to the database
         self.db.add(obj_cart)
         await self.db.commit()
-        await self.db.refresh(obj_cart)
+        # await self.db.refresh(obj_cart)
+
+        result = await self.db.execute(
+            select(Cart)
+            .options(
+                selectinload(Cart.cart_items).selectinload(CartItem.product)
+            )
+            .filter(Cart.id == obj_cart.id)
+        )
+        obj_cart = result.scalar_one_or_none()
+
 
         return obj_cart
     
@@ -100,13 +110,24 @@ class CartService:
     async def update_cart(self, form, id, model, name, user):
 
         total_amount = 0
-        cart = await OrmService(self.db).get(id=id, model=model, name=name)
+        # cart = await OrmService(self.db).get(id=id, model=model, name=name)
+        result = await self.db.execute(
+                select(Cart)
+                .options(selectinload(Cart.cart_items).selectinload(CartItem.product))
+                .filter(Cart.id == id)
+            )
+        cart = result.scalar_one_or_none()
+
+        if not cart:
+            raise HTTPException(status_code=404, detail=f"No such {name}")
+    
         product = await OrmService(self.db).get(id=form.product_id, model=Product, name='Product')
         subtotal = product.price * form.quantity
         cart_item = CartItem(
                 product_id=form.product_id,
                 quantity=form.quantity,
-                subtotal=subtotal
+                subtotal=subtotal,
+                product=product
             )
         cart.cart_items.append(cart_item)
 

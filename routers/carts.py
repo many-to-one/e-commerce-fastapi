@@ -1,4 +1,5 @@
 from typing import List
+from fastapi import Body
 from core.security import check_admin, get_current_user, get_password_hash
 from db.database import get_db
 from models.models import Cart
@@ -55,7 +56,8 @@ async def get_cart(
 @router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=CartBase)
 async def update_cart(
         id: int,
-        product_form: CartItemCreate = Depends(CartItemCreate), #CartItemCreate
+        # product_form: CartItemCreate = Depends(CartItemCreate), 
+        product_form: CartItemCreate = Body(...),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):

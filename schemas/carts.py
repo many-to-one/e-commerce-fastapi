@@ -29,6 +29,11 @@ class CartBase(BaseModel):
         from_attributes = True
 
 
+# class CartItems(BaseModel):
+#     product_id: int
+#     quantity: int
+
+
 # Create Cart
 class CartItemCreate(BaseModel):
     product_id: int
