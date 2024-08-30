@@ -56,7 +56,6 @@ async def get_cart(
 @router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=CartBase)
 async def update_cart(
         id: int,
-        # product_form: CartItemCreate = Depends(CartItemCreate), 
         product_form: CartItemCreate = Body(...),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
@@ -65,16 +64,14 @@ async def update_cart(
     return await orm_service.update_cart(form=product_form, id=id, model=Cart, name='Cart', user=current_user)
 
 
-@router.patch("/cart_item/update/{id}", status_code = status.HTTP_200_OK, response_model=CartBase)
+@router.patch("/cart_item/update", status_code = status.HTTP_200_OK, response_model=CartBase)
 async def update_cart_item(
-        cart_id: int,
-        cart_item_id: int,
-        product_form: CartItemCreate = Depends(CartItemCreate),
+        product_form: CartItemUpdate = Body(...),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):
     orm_service = CartService(db)
-    return await orm_service.update_cart_item(form=product_form, cart_id=cart_id, cart_item_id=cart_item_id, model=Cart, name='Cart')
+    return await orm_service.update_cart_item(form=product_form, model=Cart, name='Cart')
 
 
 @router.delete("/delete_cart_item/{id}", status_code = status.HTTP_200_OK,)

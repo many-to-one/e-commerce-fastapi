@@ -77,13 +77,13 @@ class CartService:
         return cart
     
 
-    async def update_cart_item(self, form, cart_id, cart_item_id, model, name):
+    async def update_cart_item(self, form, model, name):
 
         total_amount = 0
-        cart = await OrmService(self.db).get(id=cart_id, model=model, name=name)
+        cart = await OrmService(self.db).get(id=form.cart_id, model=model, name=name)
         if not cart:
             raise HTTPException(status_code=404, detail=f"No such {name}")
-        cartItem = await OrmService(self.db).get(id=cart_item_id, model=CartItem, name='CartItem')
+        cartItem = await OrmService(self.db).get(id=form.cart_item_id, model=CartItem, name='CartItem')
         if not cartItem:
             raise HTTPException(status_code=404, detail=f"No such cartItem")
 
@@ -107,62 +107,8 @@ class CartService:
         return cart
     
 
-    # async def update_cart(self, form, id, model, name, user):
 
-    #     total_amount = 0
-    #     # cart = await OrmService(self.db).get(id=id, model=model, name=name)
-    #     result = await self.db.execute(
-    #             select(Cart)
-    #             .options(selectinload(Cart.cart_items).selectinload(CartItem.product))
-    #             .filter(Cart.id == id)
-    #         )
-    #     cart = result.scalar_one_or_none()
-
-    #     if not cart:
-    #         raise HTTPException(status_code=404, detail=f"No such {name}")
-        
-    #     for item in cart.cart_items:
-    #         print('***** ITEM EXIST *****', item.product_id)
-    #         print('***** FORM DATA *****', form.product_id)
-    #         if item.product_id == form.product_id:
-    #             # print('***** ITEM EXIST *****', item.product_id)
-    #             # print('***** FORM DATA *****', form.product_id)
-    #             item.quantity += form.quantity
-
-    #             await self.db.commit()  
-    #             await self.db.refresh(cart)
-    #             return cart
-                       
-    #         else:   
-    #             product = await OrmService(self.db).get(id=form.product_id, model=Product, name='Product')
-    #             subtotal = product.price * form.quantity
-    #             cart_item = CartItem(
-    #                     product_id=form.product_id,
-    #                     quantity=form.quantity,
-    #                     subtotal=subtotal,
-    #                     product=product
-    #                 )
-    #             if cart_item.product_id == form.product_id:
-    #                 print('***** PRODUCT EXIST *****', cart_item)
-    #                 return await self.update_cart_item(form, id, cart_item.id, model, name)
-    #                 # raise HTTPException(status_code=404, detail=f"PRODUCT EXIS: {form.product_id}")
-
-    #             cart.cart_items.append(cart_item)
-
-    #             for item in cart.cart_items:
-    #                 total_amount += item.subtotal
-    #                 print('***** item.subtotal *****', item.subtotal)
-    #             cart.total_amount = total_amount
-            
-
-    #             if not cart:
-    #                 raise HTTPException(status_code=404, detail=f"No such {name}")
-                        
-    #             await self.db.commit()  
-    #             await self.db.refresh(cart)
-    #             return cart
-
-
+    # .update_cart(form=product_form, id=id, model=Cart, name='Cart', user=current_user)
     async def update_cart(self, form, id, model, name, user):
         total_amount = 0
         
