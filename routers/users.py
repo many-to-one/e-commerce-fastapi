@@ -20,6 +20,14 @@ async def all_users(
     return await orm_service.all(model=User, name='User')
 
 
+@router.get("/me", status_code = status.HTTP_200_OK, response_model=UserBase)
+async def get_me(
+        current_user: UserBase = Depends(get_current_user)
+    ):
+    print(' ***** user *****', current_user)
+    return current_user
+
+
 @router.get("/{id}", status_code = status.HTTP_200_OK, response_model=UserBase)
 async def get_user(
         id: int,
@@ -28,6 +36,7 @@ async def get_user(
     ):
     orm_service = OrmService(db)
     return await orm_service.get(id=id, model=User, name='User')
+
 
 
 @router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=UserBase)

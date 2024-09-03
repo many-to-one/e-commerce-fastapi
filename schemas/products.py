@@ -23,7 +23,7 @@ class ProductBase(BaseModel):
 class ProductDisplay(BaseModel):
     id: int
     title: str
-    description: str
+    description: Optional[str]
     price: float
     stock: int
     category_id: int
@@ -35,15 +35,23 @@ class ProductDisplay(BaseModel):
 
 
 class ProductCreateForm(BaseModel):
+    # title: str
+    # price: float
+    # stock: int
+    # category_id: int
+    # discount_percentage: Optional[float] = None
+    # brand: Optional[str] = None
+    # description: Optional[str] = None
+    # thumbnail: Optional[str] = None
+    # # images: Optional[List[str]] = None
     title: str
     price: float
     stock: int
     category_id: int
     discount_percentage: Optional[float] = None
-    rating: Optional[float] = None
     brand: Optional[str] = None
+    description: Optional[str] = None
     thumbnail: Optional[str] = None
-    images: Optional[List[str]] = None
 
 
 class ProductUpdateForm(BaseModel):

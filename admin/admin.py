@@ -12,6 +12,8 @@ from starlette.requests import Request
 from sqlalchemy.future import select
 from fastapi.security.oauth2 import OAuth2PasswordBearer
 
+from db.database import get_category_choices
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 # Load environment variables from the .env file
@@ -50,6 +52,7 @@ class UsersAdmin(ModelView, model=User):
     column_list = [
         'id', 'email', 'username', 'is_admin'
     ]
+
     form_columns = {
         'id', 'email', 'username', 'is_admin', 'created_at'
     }
@@ -58,14 +61,39 @@ class CategoriesAdmin(ModelView, model=Category):
     column_list = [
         'id', 'name'
     ]
+
     form_columns = {
         'id', 'name'
     }
+
+
 
 class ProductsAdmin(ModelView, model=Product):
     column_list = [
         'id', 'title'
     ]
+
+    form_columns = {
+        Product.id, Product.title, Product.description, 'category_id'
+    }
+
+    async def create_form(self, obj=None):
+        form = super().create_form(obj)
+        form.category_id.choices = await get_category_choices()
+        return form
+
+    async def edit_form(self, obj=None):
+        form = super().edit_form(obj)
+        form.category_id.choices = await get_category_choices()
+        return form
+
+
+
+
+ 
+
+
+
 
 
 

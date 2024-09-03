@@ -23,7 +23,7 @@ async def all_products(
 
 @router.post("/new", status_code=status.HTTP_201_CREATED, response_model=ProductDisplay)
 async def create_product(
-        category_form: ProductCreateForm = Depends(ProductCreateForm), 
+        category_form: ProductCreateForm, #= Depends(ProductCreateForm), 
         db: AsyncSession = Depends(get_db),
         check_admin: UserBase = Depends(check_admin),
         current_user: UserBase = Depends(get_current_user),       
