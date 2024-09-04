@@ -15,7 +15,7 @@ class ProductBase(BaseModel):
     rating: Optional[float] = None
     brand: Optional[str] = None
     thumbnail: Optional[str] = None
-    images: List[str]
+    # images: List[str]
     is_published: bool
     created_at: datetime
 

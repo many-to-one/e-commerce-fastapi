@@ -63,7 +63,7 @@ class OrmService:
         return obj
     
 
-    async def delete(self, id: str, model, name):
+    async def delete(self, id: int, model, name):
 
         result = await self.db.execute(select(model).filter(model.id == id))
         obj = result.scalar_one_or_none()
@@ -79,3 +79,30 @@ class OrmService:
             "message": f"{name} deleted successfully!",
             "userMessage": f"Objekt {name} został usunięty!",
             }
+    
+
+
+    async def delete_product(self, id: int):
+        # Find and delete the associated CartItem first
+        cart_item = await self.db.execute(
+            select(CartItem).filter(CartItem.product_id == id)
+        )
+        cart_item = cart_item.scalar_one_or_none()
+
+        if cart_item:
+            await self.db.delete(cart_item)
+            # No need to commit here; we'll commit everything at once later.
+
+        # Now find and delete the Product
+        product = await self.db.execute(
+            select(Product).filter(Product.id == id)
+        )
+        product = product.scalar_one_or_none()
+
+        if product:
+            await self.db.delete(product)
+            await self.db.commit()  # Commit all changes in one transaction
+            return {"message": "Product and associated cart item(s) deleted successfully!"}
+        else:
+            # If the product doesn't exist, raise an error
+            raise HTTPException(status_code=404, detail="Product not found")
