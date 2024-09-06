@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Header, Request, 
 
 router = APIRouter(tags=["Products"], prefix="/products")
 
-@router.get("/all", status_code = status.HTTP_200_OK, response_model=List[ProductDisplay])
+@router.get("/all", status_code = status.HTTP_200_OK, response_model=List[ProductBase])
 async def all_products(
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)

@@ -18,6 +18,7 @@ class ProductBase(BaseModel):
     # images: List[str]
     is_published: bool
     created_at: datetime
+    category_id: int
 
 
 class ProductDisplay(BaseModel):

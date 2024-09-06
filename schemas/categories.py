@@ -2,13 +2,13 @@ from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 
-from schemas.products import ProductDisplay
+from schemas.products import ProductDisplay, ProductBase
 
 
 class CategoryBase(BaseModel):
     id: int
     name: str
-    products: List[ProductDisplay] #Optional[List[ProductDisplay]] = []
+    products: List[ProductBase] #Optional[List[ProductDisplay]] = []
 
     class Config:
         from_attributes = True
