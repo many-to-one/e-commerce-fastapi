@@ -45,7 +45,7 @@ async def get_product(
 @router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=ProductDisplay)
 async def update_product(
         id: int,
-        product_form: ProductUpdateForm = Depends(ProductUpdateForm),
+        product_form: ProductUpdateForm, #= Depends(ProductUpdateForm),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):

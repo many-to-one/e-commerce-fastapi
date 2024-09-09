@@ -59,3 +59,8 @@ class ProductUpdateForm(BaseModel):
     title: Optional[str] = None
     price: Optional[float] = None
     stock: Optional[int] = None
+    category_id: Optional[int] = None
+    discount_percentage: Optional[float] = None
+    brand: Optional[str] = None
+    description: Optional[str] = None
+    thumbnail: Optional[str] = None

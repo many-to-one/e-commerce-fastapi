@@ -43,13 +43,7 @@ class OrmService:
 
     async def update(self, form, id, model, name):
 
-        if model == Product:
-            result = await self.db.execute(
-                select(model).options(selectinload(model.category)).filter(model.id == id)
-            )
-            obj = result.scalar_one_or_none()
-        else:
-            obj = await self.get(id=id, model=model, name=name)
+        obj = await self.get(id=id, model=model, name=name)
     
         if not obj:
             raise HTTPException(status_code=404, detail=f"No such {name}")
