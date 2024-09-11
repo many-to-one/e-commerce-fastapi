@@ -24,7 +24,7 @@ async def all_categories(
 
 @router.post("/new", status_code=status.HTTP_201_CREATED, response_model=CategoryBase)
 async def create_category(
-        category_form: CategoryCreateForm = Depends(CategoryCreateForm), 
+        category_form: CategoryCreateForm, #= Depends(CategoryCreateForm), 
         db: AsyncSession = Depends(get_db),
         check_admin: UserBase = Depends(check_admin),
         current_user: UserBase = Depends(get_current_user),       
@@ -47,7 +47,7 @@ async def get_category(
 @router.patch("/update/{id}", status_code = status.HTTP_200_OK, response_model=CategoryBase)
 async def update_category(
         id: int,
-        category_form: CategoryUpdateForm = Depends(CategoryUpdateForm),
+        category_form: CategoryUpdateForm, #= Depends(CategoryUpdateForm),
         db: AsyncSession = Depends(get_db),
         current_user: UserBase = Depends(get_current_user)
     ):

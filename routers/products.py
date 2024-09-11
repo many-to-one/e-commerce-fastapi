@@ -62,6 +62,6 @@ async def delete_product(
     orm_service = OrmService(db)
     if current_user.is_admin == True:
         # return await orm_service.delete(id=id, model=Product, name='Product')
-        return await orm_service.delete(id=id, model=Product, name='Product')
+        return await orm_service.delete_product(id=id)
     else:
         raise HTTPException(status_code=400, detail="Permission deny")
