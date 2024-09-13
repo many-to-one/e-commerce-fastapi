@@ -5,6 +5,8 @@ from models.models import Product, User
 from schemas.products import *
 from schemas.users import UserBase
 from orm.orm import *
+from orm.redis_client import *
+# from schemas.redis import Product
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException, status, Header, Request, Response
@@ -25,11 +27,27 @@ async def all_products(
 async def create_product(
         category_form: ProductCreateForm, #= Depends(ProductCreateForm), 
         db: AsyncSession = Depends(get_db),
+        # redis_client: cache = Depends(cache),
         check_admin: UserBase = Depends(check_admin),
         current_user: UserBase = Depends(get_current_user),       
     ):
     orm_service = OrmService(db)
-    return await orm_service.create(model=Product, form=category_form)
+    bd_res = await orm_service.create(model=Product, form=category_form)
+    
+     # Serialize category_form to a JSON string
+    category_form_json = category_form.json()
+    # redis_prod = Product(
+    #     title=category_form.title,
+    #     description=category_form.description,
+    #     price=category_form.price,
+    #     stock=category_form.stock
+    # )
+    # await prod.save()
+
+    # print(' ************ REDIS NEW PRODUCT ***********', redis_prod)
+    
+    return bd_res
+    # return await orm_service.create(model=Product, form=category_form)
 
 
 @router.get("/get/{id}", status_code=status.HTTP_200_OK, response_model=ProductDisplay)

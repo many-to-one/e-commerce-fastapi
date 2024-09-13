@@ -12,3 +12,16 @@ than down and up --build the docker-compose and run docker-compose up
 
 #To delete <none> images use:
 docker image prune 
+
+# Check containers
+docker ps
+
+# Exit to the container
+docker-compose exec <service_name> /bin/bash [exit to redis examplpe: docker-compose exec redis /bin/bash]
+
+# How to pip install packages:
+docker-compose exec web /bin/bash
+than I can install packages and freeze them to the requirements.txt like in cmd
+
+# How to copied files from the container to the local app environment
+docker cp <redis_container_name>:/data/redis_data.json ./redis_data.json

@@ -17,10 +17,27 @@ services:
       start_period: 30s
       timeout: 10s
 
+  redis:
+    image: redis:latest
+    container_name: redis_e-commerce
+    ports:
+      - "6379:6379"
+    restart: on-failure
+    command: redis-server
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    volumes:
+    - redis_data:/data
+
   web:
     build: .
     environment:
       DATABASE_URL: postgresql+asyncpg://admin:admin@db:5432/e-commerce_db
+      REDIS_URL: redis://redis:6379
     volumes:
       - .:/app
     entrypoint: ["./entrypoint.sh"]
@@ -29,6 +46,8 @@ services:
     command: bash -c "uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
     depends_on:
       - db
+      - redis
 
 volumes:
   postgres_data:
+  redis_data:
