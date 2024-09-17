@@ -20,6 +20,9 @@ class ProductBase(BaseModel):
     created_at: datetime
     category_id: int
 
+    class Config:
+        from_attributes = True
+
 
 class ProductDisplay(BaseModel):
     id: int

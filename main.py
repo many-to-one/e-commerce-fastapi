@@ -43,19 +43,20 @@ app.include_router(carts.router)
 
 
 
-client = RedisClient(host='redis', port=6379)
+# REDIS TEST
+# client = RedisClient(host='redis', port=6379)
 
-@app.get("/set-redis/")
-async def set_redis_value():
-    # Set a key-value pair in Redis
-    await client.set_value("test_key", "test_value")
-    return {"message": "Value set in Redis"}
+# @app.get("/set-redis/")
+# async def set_redis_value():
+#     # Set a key-value pair in Redis
+#     await client.set_value("test_key", "test_value")
+#     return {"message": "Value set in Redis"}
 
-@app.get("/get-redis/")
-async def get_redis_value():
-    # Get a value from Redis
-    value = await client.get_value("test_key")
-    return {"message": f"Value from Redis: {value.decode('utf-8')}"}
+# @app.get("/get-redis/")
+# async def get_redis_value():
+#     # Get a value from Redis
+#     value = await client.get_value("test_key")
+#     return {"message": f"Value from Redis: {value.decode('utf-8')}"}
 
 
 @app.get("/")

@@ -25,3 +25,11 @@ than I can install packages and freeze them to the requirements.txt like in cmd
 
 # How to copied files from the container to the local app environment
 docker cp <redis_container_name>:/data/redis_data.json ./redis_data.json
+
+# Check redis storage with redis-cli:
+docker-compose exec redis /bin/bash
+root@xxxxxxxxx:/data# redis-cli
+127.0.0.1:6379> keys *
+1) "product71"
+127.0.0.1:6379> get product71
+"here will be result..."
