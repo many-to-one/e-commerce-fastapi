@@ -1,6 +1,6 @@
 sudo chown newowner:newgroup filename (script.py.mako)
 #If the migration isn't exist, try to make it manualy (or just rund docker-compose up [maybe for the second time docker run migrations in entrypoint.sh when you up the app]):
-docker-compose exec web alembic revision --autogenerate -m "Your migration message"
+docker-compose exec web cascaalembic revision --autogenerate -m "Your migration message"
 docker-compose exec web alembic upgrade head
 
 # If there is an error with migrations, for example adding the column, than deleted it:
@@ -33,3 +33,9 @@ root@xxxxxxxxx:/data# redis-cli
 1) "product71"
 127.0.0.1:6379> get product71
 "here will be result..."
+
+# Remove all keys from all databases in Redis
+redis-cli FLUSHALL
+
+# Then, stop the Redis serveR
+redis-cli shutdown

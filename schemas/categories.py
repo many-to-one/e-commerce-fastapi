@@ -8,7 +8,7 @@ from schemas.products import ProductDisplay, ProductBase
 class CategoryBase(BaseModel):
     id: int
     name: str
-    products: List[ProductBase] #Optional[List[ProductDisplay]] = []
+    # products: List[ProductBase] #Optional[List[ProductDisplay]] = []
 
     class Config:
         from_attributes = True

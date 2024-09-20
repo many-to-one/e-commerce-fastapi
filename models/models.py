@@ -62,7 +62,7 @@ class Category(Base):
     name = Column(String, unique=True, nullable=False)
 
     # Relationship with products
-    products = relationship("Product", back_populates="category", lazy="selectin")
+    products = relationship("Product", back_populates="category", lazy="selectin",  cascade="all, delete")
 
 
 class Product(Base):
