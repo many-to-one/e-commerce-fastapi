@@ -1,6 +1,6 @@
 sudo chown newowner:newgroup filename (script.py.mako)
 #If the migration isn't exist, try to make it manualy (or just rund docker-compose up [maybe for the second time docker run migrations in entrypoint.sh when you up the app]):
-docker-compose exec web cascaalembic revision --autogenerate -m "Your migration message"
+docker-compose exec web casca alembic revision --autogenerate -m "Your migration message"
 docker-compose exec web alembic upgrade head
 
 # If there is an error with migrations, for example adding the column, than deleted it:

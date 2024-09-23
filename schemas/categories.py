@@ -20,3 +20,11 @@ class CategoryCreateForm(BaseModel):
 
 class CategoryUpdateForm(BaseModel):
     name: str
+
+
+class SubcategoryBase(BaseModel):
+    name: str
+
+
+class SubCategoryCreateForm(BaseModel):
+    name: str

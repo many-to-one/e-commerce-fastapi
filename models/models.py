@@ -61,8 +61,25 @@ class Category(Base):
     id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
     name = Column(String, unique=True, nullable=False)
 
+    # Relationship with products through subcategories
+    products = relationship("Product", back_populates="category", lazy="selectin", cascade="all, delete")
+
+    # Relationship with subcategories
+    subcategories = relationship("Subcategory", back_populates="category", lazy="selectin", cascade="all, delete")
+
+
+class Subcategory(Base):
+    __tablename__ = "subcategories"
+
+    id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
+    name = Column(String, unique=True, nullable=False)
+
+    # Relationship with category
+    category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
+    category = relationship("Category", back_populates="subcategories", lazy="selectin")
+
     # Relationship with products
-    products = relationship("Product", back_populates="category", lazy="selectin",  cascade="all, delete")
+    products = relationship("Product", back_populates="subcategory", lazy="selectin", cascade="all, delete")
 
 
 class Product(Base):
@@ -85,5 +102,44 @@ class Product(Base):
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
     category = relationship("Category", back_populates="products", lazy="selectin")
 
+    # Relationship with subcategory
+    subcategory_id = Column(Integer, ForeignKey("subcategories.id", ondelete="CASCADE"), nullable=True)
+    subcategory = relationship("Subcategory", back_populates="products", lazy="selectin")
+
     # Relationship with cart items
     cart_items = relationship("CartItem", back_populates="product", lazy="selectin")
+
+
+
+# class Category(Base):
+#     __tablename__ = "categories"
+
+#     id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
+#     name = Column(String, unique=True, nullable=False)
+
+#     # Relationship with products
+#     products = relationship("Product", back_populates="category", lazy="selectin",  cascade="all, delete")
+
+
+# class Product(Base):
+#     __tablename__ = "products"
+
+#     id = Column(Integer, primary_key=True, nullable=False, unique=True, autoincrement=True)
+#     title = Column(String, nullable=False)
+#     description = Column(String, nullable=True)
+#     price = Column(Float, nullable=False)
+#     discount_percentage = Column(Float, nullable=True)
+#     rating = Column(Float, nullable=True)
+#     stock = Column(Integer, nullable=False)
+#     brand = Column(String, nullable=True)
+#     thumbnail = Column(String, nullable=True)
+#     images = Column(ARRAY(String), nullable=True)
+#     is_published = Column(Boolean, server_default="True", nullable=False)
+#     created_at = Column(TIMESTAMP(timezone=True), server_default=text("NOW()"), nullable=False)
+
+#     # Relationship with category
+#     category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"), nullable=False)
+#     category = relationship("Category", back_populates="products", lazy="selectin")
+
+#     # Relationship with cart items
+#     cart_items = relationship("CartItem", back_populates="product", lazy="selectin")

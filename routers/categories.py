@@ -3,13 +3,13 @@ from typing import List
 from core.security import get_current_user, check_admin
 from db.database import get_db
 from fastapi import APIRouter, Depends, Query, status
-from models.models import Category, Product
+from models.models import Category, Product, Subcategory
 from orm.orm import OrmService
 from redis_.redis import RedisClient
 from schemas.products import ProductBase
 from schemas.users import UserBase
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.categories import CategoryBase, CategoryCreateForm, CategoryUpdateForm
+from schemas.categories import CategoryBase, CategoryCreateForm, CategoryUpdateForm, SubCategoryCreateForm
 
 
 router = APIRouter(tags=["Category"], prefix="/category")
@@ -148,3 +148,28 @@ async def delete_category(
 #         return await orm_service.delete(id=id, model=Category, name='Category')
 #     else:
 #         raise HTTPException(status_code=400, detail="Permission deny")
+
+
+
+# Create a new subcategory under a specific category
+@router.post("/{category_id}/subcategories", status_code=status.HTTP_201_CREATED, response_model=SubcategoryDisplay)
+async def create_subcategory(
+    category_id: int, 
+    subcategory: SubCategoryCreateForm, 
+    db: AsyncSession = Depends(get_db),
+    current_user: UserBase = Depends(get_current_user)
+):
+    orm_service = OrmService(db)
+
+    # Only admin users can create subcategories
+    if current_user.is_admin:
+        category = await orm_service.get_by_id(id=category_id, model=Category)
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+
+        subcategory_data = subcategory.dict()
+        subcategory_data["category_id"] = category_id
+        new_subcategory = await orm_service.create(model=Subcategory, form=subcategory_data)
+        return new_subcategory
+    else:
+        raise HTTPException(status_code=403, detail="Not authorized")
