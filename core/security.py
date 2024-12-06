@@ -20,6 +20,32 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
+async def create_superuser(db, username, email, password):
+
+    # Check if the superuser already exists
+    # existing_user = await db.execute(select(User)).filter(User.email == email).first()
+    result = await db.execute(select(User).filter(User.email == email))  # Await the query execution
+    user = result.scalar_one_or_none() 
+    print('****************************** existing_user ******************************', user)
+    if user:
+        raise HTTPException(
+            status_code=400, detail="Superuser already exists."
+        )
+
+    # Create the superuser
+    superuser = User(
+        username=username,
+        email=email,
+        password=get_password_hash(password),
+        is_admin=True,
+        is_active=True,
+    )
+    db.add(superuser)
+    await db.commit()
+    await db.refresh(superuser)
+    return superuser
+
+
 def get_password_hash(password):
     return pwd_context.hash(password)
 
@@ -100,5 +126,6 @@ async def check_admin(token: str = Depends(oauth2_scheme), db: AsyncSession = De
     user_id = user.get('id')
     result = await db.execute(select(User).filter(User.id == user_id))
     current_user = result.scalar_one_or_none()
+    print('******************* current_user *******************', current_user.is_admin)
     if current_user.is_admin != True:
         raise HTTPException(status_code=403, detail="Admin role required")

@@ -1,5 +1,5 @@
 from typing import List
-from core.security import get_current_user, get_password_hash
+from core.security import create_superuser, get_current_user, get_password_hash
 from db.database import get_db
 from models.models import User
 from schemas.auth import ChangePasswordForm, TokenResponse
@@ -9,9 +9,38 @@ from orm.auth import *
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, status, Response
 from fastapi.security.oauth2 import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi import HTTPException
+
+from dotenv import load_dotenv
+import os
 
 
 router = APIRouter(tags=["Auth"], prefix="/auth")
+
+
+@router.post("/super_user", status_code=status.HTTP_201_CREATED, response_model=UserBase)
+async def create_superuser_func(
+        user_form: UserCreateForm = Depends(UserCreateForm), 
+        db: AsyncSession = Depends(get_db)
+    ):
+
+    __username = os.getenv('admin_username')
+    __email = os.getenv('admin_email')
+    __password = os.getenv('admin_password')
+
+    print('******************* __username ******************', user_form.username)
+
+    if user_form.username == __username and user_form.email == __email and user_form.password == __password:
+        return await create_superuser(
+            db=db,
+            username=user_form.username,
+            email=user_form.email,
+            password=user_form.password
+        )
+    else:
+        raise HTTPException(
+            status_code=404, detail="Wrong credentials for superuser"
+        )
 
 
 @router.post("/sing_up", status_code=status.HTTP_201_CREATED, response_model=UserBase)

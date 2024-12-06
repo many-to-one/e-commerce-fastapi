@@ -9,7 +9,7 @@ from redis_.redis import RedisClient
 from schemas.products import ProductBase
 from schemas.users import UserBase
 from sqlalchemy.ext.asyncio import AsyncSession
-from schemas.categories import CategoryBase, CategoryCreateForm, CategoryUpdateForm, SubCategoryCreateForm
+from schemas.categories import CategoryBase, CategoryCreateForm, CategoryUpdateForm, SubCategoryCreateForm, SubcategoryBase
 
 
 router = APIRouter(tags=["Category"], prefix="/category")
@@ -152,7 +152,7 @@ async def delete_category(
 
 
 # Create a new subcategory under a specific category
-@router.post("/{category_id}/subcategories", status_code=status.HTTP_201_CREATED, response_model=SubcategoryDisplay)
+@router.post("/{category_id}/subcategories", status_code=status.HTTP_201_CREATED, response_model=SubcategoryBase)
 async def create_subcategory(
     category_id: int, 
     subcategory: SubCategoryCreateForm, 

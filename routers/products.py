@@ -39,11 +39,16 @@ async def all_products(
     else:
         orm_service = OrmService(db)
         products = await orm_service.all(model=Product, name='Product')
-        products_list = [ProductBase.from_orm(product).dict() for product in products]
-        products_serialized_data = json.dumps(products_list, cls=CustomJSONEncoder)
-        redis_products = await client.set_value('Products', products_serialized_data)
-        # print('######### redis_products #########', products_serialized_data)
-        return products_serialized_data
+        if products:
+            products_list = [ProductBase.from_orm(product).dict() for product in products]
+            products_serialized_data = json.dumps(products_list, cls=CustomJSONEncoder)
+            redis_products = await client.set_value('Products', products_serialized_data)
+            # print('######### redis_products #########', products_serialized_data)
+            return products_serialized_data
+        else:
+            raise HTTPException(
+                status_code=404, detail="Brak produktów"
+            )
     
 
 
